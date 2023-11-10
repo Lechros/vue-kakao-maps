@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import KakaoMap from '@/components/KakaoMap.vue';
 </script>
 
 <template>
-  <div></div>
+  <div id="map"></div>
 </template>
 
 <style scoped></style>

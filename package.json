@@ -1,10 +1,20 @@
 {
   "name": "vue-kakao-maps",
   "version": "0.0.0",
-  "private": true,
+  "type": "module",
+  "files": ["dist"],
+  "main": "./dist/vue-kakao-maps.umd.cjs",
+  "module": "./dist/vue-kakao-maps.js",
+  "exports": {
+    ".": {
+      "import": "./dist/vue-kakao-maps.js",
+      "require": "./dist/vue-kakao-maps.umd.cjs"
+    }
+  },
+  "types": "./dist/index.d.ts",
   "scripts": {
     "dev": "vite",
-    "build": "run-p type-check \"build-only {@}\" --",
+    "build": "run-p type-check \"build-only {@}\" && vue-tsc --emitDeclarationOnly",
     "preview": "vite preview",
     "build-only": "vite build",
     "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
@@ -12,6 +22,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "kakao.maps.d.ts": "^0.1.39",
     "vue": "^3.3.4"
   },
   "devDependencies": {
