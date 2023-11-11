@@ -89,13 +89,13 @@ function createOptions(props: InfoWindowProps): kakao.maps.InfoWindowOptions {
 </script>
 
 <template>
-  <div ref="content" :class="{ hidden }">
+  <div ref="content" :class="{ 'vue-kakao-maps--hidden': hidden }">
     <slot></slot>
   </div>
 </template>
 
 <style scoped>
-.hidden {
+.vue-kakao-maps--hidden {
   visibility: hidden;
 }
 </style>
