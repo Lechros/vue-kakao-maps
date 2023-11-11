@@ -1,8 +1,10 @@
 {
   "name": "vue-kakao-maps",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "main": "./dist/vue-kakao-maps.umd.cjs",
   "module": "./dist/vue-kakao-maps.js",
   "exports": {
@@ -21,8 +23,7 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write src/"
   },
-  "dependencies": {
-    "kakao.maps.d.ts": "^0.1.39",
+  "peerDependencies": {
     "vue": "^3.3.4"
   },
   "devDependencies": {
@@ -35,6 +36,7 @@
     "@vue/tsconfig": "^0.4.0",
     "eslint": "^8.49.0",
     "eslint-plugin-vue": "^9.17.0",
+    "kakao.maps.d.ts": "^0.1.39",
     "npm-run-all2": "^6.1.1",
     "prettier": "^3.0.3",
     "typescript": "~5.2.0",
