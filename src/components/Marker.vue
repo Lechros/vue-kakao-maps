@@ -2,7 +2,7 @@
 import { useMap } from '@/hooks/useMap';
 import { MarkerProps } from '@/types/MarkerProps.js';
 import { createLatLng } from '@/utils/create';
-import { onMounted, onUnmounted, provide, ref, watch } from 'vue';
+import { onUnmounted, provide, ref, watch } from 'vue';
 
 const props = withDefaults(defineProps<MarkerProps>(), {
   open: false,
