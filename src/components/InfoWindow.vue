@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useMap } from '@/hooks/useMap';
-import { useMarker } from '@/hooks/useMarker';
-import { InfoWindowProps } from '@/types/InfoWindowProps';
-import { createLatLng } from '@/utils/create';
+import { useMap } from '../hooks/useMap';
+import { useMarker } from '../hooks/useMarker';
+import { InfoWindowProps } from '../types/InfoWindowProps';
+import { createLatLng } from '../utils/create';
 import { onUnmounted, ref, watch } from 'vue';
 
 const props = withDefaults(defineProps<InfoWindowProps>(), {

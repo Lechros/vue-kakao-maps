@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { KakaoMapProps } from '@/types/KakaoMapProps.js';
-import { KakaoLoader } from '@/utils/KakaoLoader';
-import { createCopyrightPosition, createLatLng, createMapTypeId } from '@/utils/create';
+import type { KakaoMapProps } from '../types/KakaoMapProps.js';
+import { KakaoLoader } from '../utils/KakaoLoader';
+import { createCopyrightPosition, createLatLng, createMapTypeId } from '../utils/create';
 import { onMounted, provide, ref, watch } from 'vue';
 
 // Props 설정
