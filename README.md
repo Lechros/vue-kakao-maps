@@ -1,46 +1,85 @@
 # vue-kakao-maps
 
-This template should help get you started developing with Vue 3 in Vite.
+[Kakao Maps API](https://apis.map.kakao.com/web/)를 vue에서 사용할 수 있도록 도와주는 라이브러리입니다.
 
-## Recommended IDE Setup
+[react-kakao-maps-sdk](https://github.com/JaeSeoKim/react-kakao-maps-sdk/)를 참고했습니다.
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+## Usage
 
-## Type Support for `.vue` Imports in TS
+이 라이브러리를 사용하기 위해서는 필수적으로 Kakao 지도 API를 불러와야 합니다.
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
+[Kakao Maps Javascript API](https://apis.map.kakao.com/web/guide/)
 
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
+### HTML Script Tag를 이용하여 Kakao Maps API 불러오기
 
-1. Disable the built-in TypeScript Extension
-    1) Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-    2) Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
-
-```sh
-pnpm install
+```html
+<script
+  type="text/javascript"
+  src="//dapi.kakao.com/v2/maps/sdk.js?appkey=발급받은 APP KEY를 넣으시면 됩니다.&libraries=services,clusterer"
+></script>
 ```
 
-### Compile and Hot-Reload for Development
+### Hook(Composable)을 이용하여 Kakao Maps API 불러오기
 
-```sh
-pnpm dev
+```vue
+<script setup>
+import { useKakaoLoader, KakaoLoader } from 'vue-kakao-maps'
+
+KakaoLoader.addLoadEventListener(() => console.log('ok'))
+KakaoLoader.addErrorEventListener((err) => console.error(err))
+
+useKakaoLoader({
+  appKey: '...', // 발급 받은 APP KEY
+  ...options // 추가 옵션
+})
+</script>
 ```
 
-### Type-Check, Compile and Minify for Production
+## Install
 
-```sh
-pnpm build
+```bash
+npm i vue-kakao-maps
+# or
+yarn add vue-kakao-maps
+# or
+pnpm i vue-kakao-maps
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+## Sample
 
-```sh
-pnpm lint
+### 맵 위에 컨트롤 올리기
+
+```vue
+<script setup>
+import { KakaoMap, MapTypeControl, ZoomControl } from 'vue-kakao-maps'
+</script>
+
+<KakaoMap :center="{ lat: 37.5013, lng: 127.0395 }" style="width: 100%; height: 500px">
+  <MapTypeControl position="TOPRIGHT" />
+  <ZoomControl position="RIGHT" />
+</KakaoMap>
 ```
+
+### 맵 위에 마커와 인포윈도우 올리기
+
+```vue
+<script setup>
+import { KakaoMap, Marker, InfoWindow } from 'vue-kakao-maps'
+</script>
+
+<KakaoMap :center="{ lat: 37.5013, lng: 127.0395 }" style="width: 100%; height: 500px">
+  <Marker :position="{ lat: 37.5013, lng: 127.0395 }">
+    <InfoWindow open>
+      Hello World!
+    </InfoWindow>
+  </Marker>
+</KakaoMap>
+```
+
+## Working list
+
+- Map
+  - Marker
+  - InfoWindow
+  - MapTypeControl
+  - ZoomControl
