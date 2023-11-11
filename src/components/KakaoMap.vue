@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { CopyrightPosition } from '@/types/CopyrightPosition'
-import type { KakaoMapProps } from '@/types/KakaoMapProps.js'
-import type { LatLng } from '@/types/LatLng'
-import type { MapTypeId } from '@/types/MapTypeId'
-import { KakaoLoader } from '@/utils/KakaoLoader'
-import { onMounted, provide, ref, watch } from 'vue'
+import type { KakaoMapProps } from '@/types/KakaoMapProps.js';
+import { KakaoLoader } from '@/utils/KakaoLoader';
+import { createCopyrightPosition, createLatLng, createMapTypeId } from '@/utils/create';
+import { onMounted, provide, ref, watch } from 'vue';
 
 // Props 설정
 const props = withDefaults(defineProps<KakaoMapProps>(), {
@@ -56,6 +54,7 @@ onMounted(() => {
 // 컨테이너 div가 존재할 경우 props로부터 Map 생성
 function init() {
   if (!container.value) return
+  if (map.value) return
 
   const options = createMapOptions(props)
   map.value = new kakao.maps.Map(container.value, options)
@@ -99,11 +98,7 @@ watch([map, () => props.zoomable], ([map, zoomable], [, _zoomable]) => {
 
 watch([map, () => props.keyboardShortcuts], ([map, keyboardShortcuts], [, _keyboardShortcuts]) => {
   if (keyboardShortcuts === _keyboardShortcuts) return
-  if (keyboardShortcuts === false) {
-    map.setKeyboardShortcuts(keyboardShortcuts)
-  } else {
-    map.setKeyboardShortcuts(true)
-  }
+  map.setKeyboardShortcuts(keyboardShortcuts !== false)
 })
 
 watch([map, () => props.copyrightPosition, () => props.copyrightReversed], ([map, copyrightPosition, copyrightReversed], [, _copyrightPosition, _copyrightReversed]) => {
@@ -126,7 +121,7 @@ watch([container, map], ([container, map]) => {
   }
 })
 
-// 지도 Event를 emit
+// 지도 Event emit
 const listeners: Record<string, () => void> = {};
 watch(map, (map) => {
   if (!window.kakao || !window.kakao.maps) return
@@ -147,26 +142,6 @@ watch(map, (map) => {
   addListener(map, 'maptypeid_changed', listeners)
 })
 
-function createMapOptions(props: KakaoMapProps): kakao.maps.MapOptions {
-  return {
-    ...props,
-    center: createLatLng(props.center),
-    mapTypeId: createMapTypeId(props.mapTypeId),
-  };
-}
-
-function createLatLng(latLng: LatLng): kakao.maps.LatLng {
-  return new kakao.maps.LatLng(latLng.latitude, latLng.longitude)
-}
-
-function createMapTypeId(mapTypeId: MapTypeId): kakao.maps.MapTypeId {
-  return kakao.maps.MapTypeId[mapTypeId]
-}
-
-function createCopyrightPosition(copyrightPosition: CopyrightPosition): kakao.maps.CopyrightPosition {
-  return kakao.maps.CopyrightPosition[copyrightPosition]
-}
-
 function addListener(map: kakao.maps.Map, type: any, listeners: Record<string, Function>) {
   function createListener(map: kakao.maps.Map, type: any) {
     if (['click', 'dblclick', 'rightclick', 'mousemove'].includes(type)) {
@@ -181,6 +156,14 @@ function addListener(map: kakao.maps.Map, type: any, listeners: Record<string, F
   }
   listeners[type] = createListener(map, type)
   kakao.maps.event.addListener(map, type, listeners[type])
+}
+
+function createMapOptions(props: KakaoMapProps): kakao.maps.MapOptions {
+  return {
+    ...props,
+    center: createLatLng(props.center),
+    mapTypeId: createMapTypeId(props.mapTypeId),
+  };
 }
 </script>
 

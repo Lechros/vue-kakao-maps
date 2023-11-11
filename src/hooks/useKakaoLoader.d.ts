@@ -1,4 +1,4 @@
-import { KakaoLoaderOptions } from '@/utils/KakaoLoader'
+import type { KakaoLoaderOptions } from '@/utils/KakaoLoader'
 
 declare function useKakaoLoader(options: KakaoLoaderOptions): {
   load: boolean
