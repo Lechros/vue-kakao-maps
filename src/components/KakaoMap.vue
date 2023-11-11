@@ -21,6 +21,23 @@ const props = withDefaults(defineProps<KakaoMapProps>(), {
   pan: false,
 })
 
+// Events 설정
+const emit = defineEmits<{
+  center_changed: [map: kakao.maps.Map]
+  zoom_start: [map: kakao.maps.Map]
+  zoom_changed: [map: kakao.maps.Map]
+  bounds_changed: [map: kakao.maps.Map]
+  click: [mouseEvent: MouseEvent, map: kakao.maps.Map]
+  dblclick: [mouseEvent: MouseEvent, map: kakao.maps.Map]
+  rightclick: [mouseEvent: MouseEvent, map: kakao.maps.Map]
+  mousemove: [mouseEvent: MouseEvent, map: kakao.maps.Map]
+  drag: [map: kakao.maps.Map]
+  dragend: [map: kakao.maps.Map]
+  idle: [map: kakao.maps.Map]
+  tilesloaded: [map: kakao.maps.Map]
+  maptypeid_changed: [map: kakao.maps.Map]
+}>()
+
 // 컨테이너 div 및 map 객체 설정
 const container = ref<HTMLDivElement>(null)
 const map = ref<kakao.maps.Map>(null)
@@ -109,6 +126,27 @@ watch([container, map], ([container, map]) => {
   }
 })
 
+// 지도 Event를 emit
+const listeners: Record<string, () => void> = {};
+watch(map, (map) => {
+  if (!window.kakao || !window.kakao.maps) return
+  if (!map) return
+
+  addListener(map, 'center_changed', listeners)
+  addListener(map, 'zoom_start', listeners)
+  addListener(map, 'zoom_changed', listeners)
+  addListener(map, 'bounds_changed', listeners)
+  addListener(map, 'click', listeners)
+  addListener(map, 'dblclick', listeners)
+  addListener(map, 'rightclick', listeners)
+  addListener(map, 'mousemove', listeners)
+  addListener(map, 'drag', listeners)
+  addListener(map, 'dragend', listeners)
+  addListener(map, 'idle', listeners)
+  addListener(map, 'tilesloaded', listeners)
+  addListener(map, 'maptypeid_changed', listeners)
+})
+
 function createMapOptions(props: KakaoMapProps): kakao.maps.MapOptions {
   return {
     ...props,
@@ -127,6 +165,22 @@ function createMapTypeId(mapTypeId: MapTypeId): kakao.maps.MapTypeId {
 
 function createCopyrightPosition(copyrightPosition: CopyrightPosition): kakao.maps.CopyrightPosition {
   return kakao.maps.CopyrightPosition[copyrightPosition]
+}
+
+function addListener(map: kakao.maps.Map, type: any, listeners: Record<string, Function>) {
+  function createListener(map: kakao.maps.Map, type: any) {
+    if (['click', 'dblclick', 'rightclick', 'mousemove'].includes(type)) {
+      return (ev) => emit(type, ev, map)
+    } else {
+      return () => emit(type, map)
+    }
+  }
+
+  if (type in listeners) {
+    kakao.maps.event.removeListener(map, type, listeners[type])
+  }
+  listeners[type] = createListener(map, type)
+  kakao.maps.event.addListener(map, type, listeners[type])
 }
 </script>
 

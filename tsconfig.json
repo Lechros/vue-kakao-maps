@@ -26,7 +26,8 @@
     "./env.d.ts",
     "src/composables/useMap.js",
     "src/composables/asdf",
-    "src/composables/useKakaoLoader.js"
+    "src/composables/useKakaoLoader.js",
+    "src/hooks/useKakaoLoader.js"
   ],
   "exclude": ["src/main.ts", "src/App.vue"]
 }

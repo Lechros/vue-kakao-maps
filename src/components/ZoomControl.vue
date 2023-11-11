@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useMap } from '@/composables/useMap';
+import { useMap } from '@/hooks/useMap.js';
 import type { ControlPosition } from '@/types/ControlPosition';
 import { onUnmounted, ref, watch } from 'vue';
 

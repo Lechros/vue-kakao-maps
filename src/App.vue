@@ -2,7 +2,7 @@
 import KakaoMap from '@/components/KakaoMap.vue';
 import MapTypeControl from '@/components/MapTypeControl.vue';
 import { ref } from 'vue';
-import { useKakaoLoader } from './composables/useKakaoLoader';
+import { useKakaoLoader } from '@/hooks/useKakaoLoader';
 import ZoomControl from './components/ZoomControl.vue';
 
 const show = ref(true);
