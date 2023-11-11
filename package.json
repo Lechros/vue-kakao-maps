@@ -14,7 +14,7 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "dev": "vite",
-    "build": "run-p type-check \"build-only {@}\" && vue-tsc --emitDeclarationOnly",
+    "build": "vite build && vue-tsc --emitDeclarationOnly",
     "preview": "vite preview",
     "build-only": "vite build",
     "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false",

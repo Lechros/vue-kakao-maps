@@ -11,10 +11,22 @@
   "compilerOptions": {
     "declaration": true,
     "declarationDir": "dist",
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "types": ["kakao.maps.d.ts"]
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.vue"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.vue",
+    "./env.d.ts",
+    "src/composables/useMap.js",
+    "src/composables/asdf",
+    "src/composables/useKakaoLoader.js"
+  ],
   "exclude": ["src/main.ts", "src/App.vue"]
 }
