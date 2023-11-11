@@ -1,3 +1,4 @@
+import { CopyrightPosition } from './CopyrightPosition.d'
 import { LatLng } from './LatLng'
 import { MapTypeId } from './MapTypeId'
 
@@ -21,7 +22,7 @@ export interface KakaoMapProps {
   /**
    * 마우스 휠, 모바일 터치를 이용한 확대 및 축소 가능 여부
    */
-  scrollwheel?: boolean
+  zoomable?: boolean
   /**
    * 더블클릭 이벤트 및 더블클릭 확대 가능 여부
    */
@@ -50,6 +51,18 @@ export interface KakaoMapProps {
    * 최고 레벨 값
    */
   maxLevel?: number
+  /**
+   * Copyright의 위치를 설정한다
+   */
+  copyrightPosition?: CopyrightPosition
+  /**
+   * Copyright의 로고와의 위치를 반전시킨다
+   */
+  copyrightReversed?: boolean
+  /**
+   * 지도 위에 마우스 커서가 위치할 경우 보여지는 커서의 스타일을 지정한다.
+   */
+  cursorStyle?: string
   /**
    * 중심 좌표 이동 시 부드럽게 이동 여부 (기본값: `false`)
    */
