@@ -6,6 +6,7 @@ import { useKakaoLoader } from '@/hooks/useKakaoLoader';
 import ZoomControl from './components/ZoomControl.vue';
 import InfoWindow from '@/components/InfoWindow.vue';
 import Marker from './components/Marker.vue';
+import CustomOverlay from './components/CustomOverlay.vue';
 
 const show = ref(true)
 const open = ref(false)
@@ -42,6 +43,11 @@ setTimeout(() => {
         </div>
       </InfoWindow>
     </Marker>
+    <CustomOverlay :position="{ lat: 36.502, lng: 127.002 }">
+      <div style="width: 50px; height: 50px; background-color: red;">
+        Overlay hello
+      </div>
+    </CustomOverlay>
   </KakaoMap>
   <button @click="show = !show">reverse</button>
 </template>
