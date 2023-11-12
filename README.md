@@ -76,6 +76,26 @@ import { KakaoMap, Marker, InfoWindow } from 'vue-kakao-maps'
 </KakaoMap>
 ```
 
+### 맵 위에 커스텀 오버레이 올리기
+
+```vue
+<script setup>
+import { KakaoMap, CustomOverlay } from 'vue-kakao-maps'
+</script>
+
+<KakaoMap :center="{ lat: 37.5013, lng: 127.0395 }" style="width: 100%; height: 500px">
+  <CustomOverlay :position="{ lat: 37.5013, lng: 127.0395 }">
+    <div class="overlay_info">
+      <a href="https://place.map.kakao.com/17600274" target="_blank"><strong>월정리 해수욕장</strong></a>
+      <div class="desc">
+        <img src="https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/place_thumb.png" alt="">
+        <span class="address">제주특별자치도 제주시 구좌읍 월정리 33-3</span>
+      </div>
+    </div>
+  </CustomOverlay>
+</KakaoMap>
+```
+
 ## Working list
 
 - Map
@@ -83,3 +103,4 @@ import { KakaoMap, Marker, InfoWindow } from 'vue-kakao-maps'
   - InfoWindow
   - MapTypeControl
   - ZoomControl
+  - CustomOverlay
