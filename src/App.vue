@@ -22,18 +22,6 @@ useKakaoLoader({ appKey: import.meta.env.VITE_KAKAO_JAVASCRIPT_APP_KEY!, librari
 
 <template>
   <KakaoMap :center="{ lat: 36.2683, lng: 127.6358 }" :level="14" style="width: 100%; height: 95vh;">
-    <!-- <Marker :position="{ lat: 36.2583, lng: 127.6358 }">
-      <InfoWindow open>
-        Hello world
-      </InfoWindow>
-    </Marker> -->
-    <!-- <MarkerClusterer average-center :min-level="10">
-      <Marker :position="{ lat: 35, lng: 127 }" />
-      <Marker :position="{ lat: 35.1, lng: 127 }" />
-      <Marker :position="{ lat: 35.2, lng: 127 }" />
-      <Marker :position="{ lat: 35.3, lng: 127 }" />
-      <Marker :position="{ lat: 35.4, lng: 127 }" />
-    </MarkerClusterer> -->
     <MarkerClusterer average-center :min-level="10">
       <Marker v-for="(pos, i) in data" :position="pos" :key="i" />
     </MarkerClusterer>

@@ -10,15 +10,6 @@
 
 [Kakao Maps Javascript API](https://apis.map.kakao.com/web/guide/)
 
-### HTML Script Tag를 이용하여 Kakao Maps API 불러오기
-
-```html
-<script
-  type="text/javascript"
-  src="//dapi.kakao.com/v2/maps/sdk.js?appkey=발급받은 APP KEY를 넣으시면 됩니다.&libraries=services,clusterer"
-></script>
-```
-
 ### Hook(Composable)을 이용하여 Kakao Maps API 불러오기
 
 ```vue
@@ -33,6 +24,15 @@ useKakaoLoader({
   ...options // 추가 옵션
 })
 </script>
+```
+
+### HTML Script Tag를 이용하여 Kakao Maps API 불러오기
+
+```html
+<script
+  type="text/javascript"
+  src="//dapi.kakao.com/v2/maps/sdk.js?appkey=발급받은 APP KEY를 넣으시면 됩니다.&libraries=services,clusterer"
+></script>
 ```
 
 ## Install
@@ -51,7 +51,9 @@ pnpm i vue-kakao-maps
 
 ```vue
 <script setup>
-import { KakaoMap, MapTypeControl, ZoomControl } from 'vue-kakao-maps'
+import { KakaoMap, MapTypeControl, ZoomControl, useKakaoLoader } from 'vue-kakao-maps'
+
+useKakaoLoader({ appKey: '...' })
 </script>
 
 <KakaoMap :center="{ lat: 37.5013, lng: 127.0395 }" style="width: 100%; height: 500px">
@@ -64,7 +66,9 @@ import { KakaoMap, MapTypeControl, ZoomControl } from 'vue-kakao-maps'
 
 ```vue
 <script setup>
-import { KakaoMap, Marker, InfoWindow } from 'vue-kakao-maps'
+import { KakaoMap, Marker, InfoWindow, useKakaoLoader } from 'vue-kakao-maps'
+
+useKakaoLoader({ appKey: '...' })
 </script>
 
 <KakaoMap :center="{ lat: 37.5013, lng: 127.0395 }" style="width: 100%; height: 500px">
@@ -80,7 +84,9 @@ import { KakaoMap, Marker, InfoWindow } from 'vue-kakao-maps'
 
 ```vue
 <script setup>
-import { KakaoMap, CustomOverlay } from 'vue-kakao-maps'
+import { KakaoMap, CustomOverlay, useKakaoLoader } from 'vue-kakao-maps'
+
+useKakaoLoader({ appKey: '...' })
 </script>
 
 <KakaoMap :center="{ lat: 37.5013, lng: 127.0395 }" style="width: 100%; height: 500px">
@@ -96,6 +102,27 @@ import { KakaoMap, CustomOverlay } from 'vue-kakao-maps'
 </KakaoMap>
 ```
 
+### 마커 클러스터러 사용하기
+
+```vue
+<script setup>
+import { KakaoMap, CustomOverlay, useKakaoLoader } from 'vue-kakao-maps'
+
+useKakaoLoader({ appKey: '...', libraries: ['clusterer'] })
+
+const data = ref([])
+fetch('https://apis.map.kakao.com/download/web/data/chicken.json')
+  .then((res) => res.json())
+  .then((json) => (data.value = json.positions))
+</script>
+
+<KakaoMap :center="{ lat: 37.5013, lng: 127.0395 }" style="width: 100%; height: 500px">
+  <MarkerClusterer average-center :min-level="10">
+    <Marker v-for="(pos, i) in data" :position="pos" :key="i" />
+  </MarkerClusterer>
+</KakaoMap>
+```
+
 ## Working list
 
 - Map
@@ -104,3 +131,4 @@ import { KakaoMap, CustomOverlay } from 'vue-kakao-maps'
   - MapTypeControl
   - ZoomControl
   - CustomOverlay
+  - MarkerClusterer
