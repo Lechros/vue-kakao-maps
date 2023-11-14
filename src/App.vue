@@ -7,19 +7,37 @@ import ZoomControl from './components/ZoomControl.vue';
 import InfoWindow from '@/components/InfoWindow.vue';
 import Marker from './components/Marker.vue';
 import CustomOverlay from './components/CustomOverlay.vue';
+import MarkerClusterer from './components/MarkerClusterer.vue';
 
 const show = ref(true)
 const open = ref(false)
 
+const data = ref([])
+fetch("https://apis.map.kakao.com/download/web/data/chicken.json")
+  .then(res => res.json())
+  .then(json => data.value = json.positions)
 
-setTimeout(() => {
-  useKakaoLoader({ appKey: import.meta.env.VITE_KAKAO_JAVASCRIPT_APP_KEY! })
-}, 2000)
+useKakaoLoader({ appKey: import.meta.env.VITE_KAKAO_JAVASCRIPT_APP_KEY!, libraries: ['clusterer'] })
 </script>
 
 <template>
-  <KakaoMap :center="{ lat: 36.5, lng: 127 }" :level="3" style="width: 100%; height: 95vh;">
-    <MapTypeControl position="TOPRIGHT" />
+  <KakaoMap :center="{ lat: 36.2683, lng: 127.6358 }" :level="14" style="width: 100%; height: 95vh;">
+    <!-- <Marker :position="{ lat: 36.2583, lng: 127.6358 }">
+      <InfoWindow open>
+        Hello world
+      </InfoWindow>
+    </Marker> -->
+    <!-- <MarkerClusterer average-center :min-level="10">
+      <Marker :position="{ lat: 35, lng: 127 }" />
+      <Marker :position="{ lat: 35.1, lng: 127 }" />
+      <Marker :position="{ lat: 35.2, lng: 127 }" />
+      <Marker :position="{ lat: 35.3, lng: 127 }" />
+      <Marker :position="{ lat: 35.4, lng: 127 }" />
+    </MarkerClusterer> -->
+    <MarkerClusterer average-center :min-level="10">
+      <Marker v-for="(pos, i) in data" :position="pos" :key="i" />
+    </MarkerClusterer>
+    <!-- <MapTypeControl position="TOPRIGHT" />
     <ZoomControl position="BOTTOMRIGHT" />
     <Marker :position="{ lat: 36.502, lng: 127 }" clickable @mouseover="() => open = true" @mouseout="() => open = false">
       <InfoWindow :open="open">
@@ -47,7 +65,7 @@ setTimeout(() => {
       <div style="width: 50px; height: 50px; background-color: red;">
         Overlay hello
       </div>
-    </CustomOverlay>
+    </CustomOverlay> -->
   </KakaoMap>
   <button @click="show = !show">reverse</button>
 </template>

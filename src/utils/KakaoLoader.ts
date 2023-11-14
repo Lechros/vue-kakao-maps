@@ -63,18 +63,18 @@ export class KakaoLoader {
       const script = document.createElement('script')
       script.src = this.createUrl()
 
-      script.onload = () => {
+      script.addEventListener('load', () => {
         this.status.value = 'loaded'
         window.kakao.maps.load(() => {
           KakaoLoader.onload.forEach((on) => on())
         })
         resolve(window.kakao.maps)
-      }
-      script.onerror = (err) => {
+      })
+      script.addEventListener('error', (err) => {
         this.status.value = 'error'
         KakaoLoader.onerror.forEach((on) => on(err))
         reject(err)
-      }
+      })
 
       document.head.appendChild(script)
     })

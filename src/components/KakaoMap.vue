@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import { onMounted, provide, ref, shallowRef, watch } from 'vue';
 import type { KakaoMapProps } from '../types/KakaoMapProps.js';
 import { KakaoLoader } from '../utils/KakaoLoader';
 import { createCopyrightPosition, createLatLng, createMapTypeId } from '../utils/create';
-import { onMounted, provide, ref, watch } from 'vue';
 
 // Props 설정
 const props = withDefaults(defineProps<KakaoMapProps>(), {
@@ -38,7 +38,7 @@ const emit = defineEmits<{
 
 // 컨테이너 div 및 map 객체 설정
 const container = ref<HTMLDivElement>(null)
-const map = ref<kakao.maps.Map>(null)
+const map = shallowRef<kakao.maps.Map>(null)
 // context 제공
 provide("map", { map })
 

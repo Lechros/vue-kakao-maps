@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { onUnmounted, ref, shallowRef, watch } from 'vue';
 import { useMap } from '../hooks/useMap';
 import { useMarker } from '../hooks/useMarker';
 import { InfoWindowProps } from '../types/InfoWindowProps';
 import { createLatLng } from '../utils/create';
-import { onUnmounted, ref, watch } from 'vue';
 
 const props = withDefaults(defineProps<InfoWindowProps>(), {
   open: false,
@@ -13,7 +13,7 @@ const props = withDefaults(defineProps<InfoWindowProps>(), {
   zIndex: undefined,
 })
 
-const infoWindow = ref<kakao.maps.InfoWindow>(null);
+const infoWindow = shallowRef<kakao.maps.InfoWindow>(null);
 const map = useMap("InfoWindow")
 const marker = useMarker("InfoWindow")
 const content = ref<HTMLDivElement>(null)
@@ -24,7 +24,8 @@ watch(map, (map) => {
   if (infoWindow.value) return
 
   hidden.value = false
-  infoWindow.value = new kakao.maps.InfoWindow(createOptions(props))
+  const options = createOptions(props)
+  infoWindow.value = new kakao.maps.InfoWindow(options)
 }, { immediate: true })
 
 watch([infoWindow, map, () => props.open], ([infoWindow, map, open], [, _map, _open]) => {

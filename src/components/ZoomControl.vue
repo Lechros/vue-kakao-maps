@@ -1,12 +1,12 @@
 <script setup lang="ts">
+import { onUnmounted, shallowRef, watch } from 'vue';
 import { useMap } from '../hooks/useMap.js';
 import type { ControlPosition } from '../types/ControlPosition';
 import { createControlPosition } from '../utils/create';
-import { onUnmounted, ref, watch } from 'vue';
 
 const props = defineProps<{ position: ControlPosition }>();
 
-const control = ref<kakao.maps.ZoomControl>(null);
+const control = shallowRef<kakao.maps.ZoomControl>(null);
 const map = useMap("ZoomControl")
 
 watch(map, (map) => {

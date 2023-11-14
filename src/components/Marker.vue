@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import { useMarkerClusterer } from '@/hooks/useMarkerClusterer';
+import { inject, onUnmounted, provide, shallowRef, watch } from 'vue';
 import { useMap } from '../hooks/useMap';
 import { MarkerProps } from '../types/MarkerProps.js';
 import { createLatLng } from '../utils/create';
-import { onUnmounted, provide, ref, watch } from 'vue';
 
 const props = withDefaults(defineProps<MarkerProps>(), {
   open: false,
@@ -27,17 +28,30 @@ const emit = defineEmits<{
   dragend: [marker: kakao.maps.Marker, map: kakao.maps.Map]
 }>()
 
-const marker = ref<kakao.maps.Marker>(null);
+const marker = shallowRef<kakao.maps.Marker>(null);
 const map = useMap("Marker")
+const clusterer = useMarkerClusterer("Marker")
 // context 제공
 provide("marker", { marker })
+// Marker가 모두 추가된 후 MarkerCluster.redraw 호출하기 위해 로드된 개수 추적
+const count = inject('markerCount').count
 
 watch(map, (map) => {
   if (!map) return
   if (marker.value) return
 
-  marker.value = new kakao.maps.Marker(createOptions(props))
+  const options = createOptions(props)
+  marker.value = new kakao.maps.Marker(options)
 }, { immediate: true })
+
+watch([marker, map], ([marker, map], [_marker, _map]) => {
+  if (!marker) return
+  if (marker === _marker && map === _map) return
+  if (clusterer) {
+    clusterer.value.addMarker(marker, true)
+    count.value++
+  }
+})
 
 watch([marker, () => props.image], ([marker, image], [, _image]) => {
   if (!marker) return
@@ -100,10 +114,13 @@ watch([marker, () => props.opacity], ([marker, opacity], [, _opacity]) => {
 })
 
 onUnmounted(() => {
-  if (!map.value) return
   if (!marker.value) return
 
-  marker.value.setMap(null)
+  if (clusterer && clusterer.value) {
+    clusterer.value.removeMarker(marker.value)
+  } else {
+    marker.value.setMap(null)
+  }
 })
 
 // 지도 Event emit
@@ -129,9 +146,12 @@ function addListener(marker: kakao.maps.Marker, map: kakao.maps.Map, type: any, 
 }
 
 function createOptions(props: MarkerProps): kakao.maps.MarkerOptions {
+  const parent = clusterer && clusterer.value
+    ? {}
+    : { map: map.value }
   return {
     ...props,
-    map: map.value,
+    ...parent,
     position: createLatLng(props.position)
   }
 }

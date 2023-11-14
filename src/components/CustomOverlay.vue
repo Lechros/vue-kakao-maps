@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { CustomOverlayProps } from '@/types/CustomOverlayProps';
-import { onUnmounted, ref, watch } from 'vue';
+import { onUnmounted, ref, shallowRef, watch } from 'vue';
 import { useMap } from '../hooks/useMap';
 import { createLatLng } from '../utils/create';
 
@@ -11,7 +11,7 @@ const props = withDefaults(defineProps<CustomOverlayProps>(), {
   zIndex: 0
 })
 
-const overlay = ref<kakao.maps.CustomOverlay>(null);
+const overlay = shallowRef<kakao.maps.CustomOverlay>(null);
 const map = useMap("CustomOverlay")
 const content = ref<HTMLDivElement>(null)
 const hidden = ref(true)
