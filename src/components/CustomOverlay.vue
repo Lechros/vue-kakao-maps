@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useMap } from '@/hooks/useMap';
 import type { CustomOverlayProps } from '@/types/CustomOverlayProps';
-import { createLatLng } from '@/utils/create';
+import { toKakaoLatLng } from '@/utils/convert';
 import { onUnmounted, ref, shallowRef, watch } from 'vue';
 
 const props = withDefaults(defineProps<CustomOverlayProps>(), {
@@ -27,7 +27,7 @@ watch(map, (map) => {
 watch([overlay, () => props.position], ([marker, position], [, _position]) => {
   if (!marker) return
   if (position === _position) return
-  marker.setPosition(createLatLng(position))
+  marker.setPosition(toKakaoLatLng(position))
 }, { deep: true })
 
 // HTMLElement의 Attribute만 바뀌는 것으로는 업데이트가 안된다.
@@ -71,7 +71,7 @@ function createOptions(props: CustomOverlayProps): kakao.maps.CustomOverlayOptio
   return {
     ...props,
     map: map.value,
-    position: createLatLng(props.position)
+    position: toKakaoLatLng(props.position)
   }
 }
 </script>
@@ -86,4 +86,4 @@ function createOptions(props: CustomOverlayProps): kakao.maps.CustomOverlayOptio
 .vue-kakao-maps--hidden {
   visibility: hidden;
 }
-</style>
+</style>@/utils/convert

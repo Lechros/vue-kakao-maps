@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useMap } from '@/hooks/useMap.js';
 import type { ControlPosition } from '@/types/ControlPosition';
-import { createControlPosition } from '@/utils/create';
+import { toKakaoControlPosition } from '@/utils/convert';
 import { onUnmounted, shallowRef, watch } from 'vue';
 
 const props = defineProps<{ position: ControlPosition }>();
@@ -19,7 +19,7 @@ watch([control, () => props.position], ([control, position]) => {
   if (!control) return
 
   map.value.removeControl(control)
-  map.value.addControl(control, createControlPosition(position))
+  map.value.addControl(control, toKakaoControlPosition(position))
 })
 
 onUnmounted(() => {

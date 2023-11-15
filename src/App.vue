@@ -53,7 +53,7 @@ useKakaoLoader({ appKey: import.meta.env.VITE_KAKAO_JAVASCRIPT_APP_KEY!, librari
         </div>
       </InfoWindow>
     </Marker>
-    <MarkerClusterer average-center :min-level="10">
+    <MarkerClusterer average-center :min-level="10" @clusterover="(ev) => console.log(ev)">
       <Marker v-for="(pos, i) in data" :position="pos" :key="i" />
     </MarkerClusterer>
     <CustomOverlay :position="{ lat: 37.5, lng: 127.1 }" :visible="showCustomOverlay">

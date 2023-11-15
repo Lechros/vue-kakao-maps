@@ -17,12 +17,12 @@ const props = withDefaults(defineProps<MarkerClustererProps>(), {
 })
 
 const emit = defineEmits<{
-    clusterclick: [cluster: kakao.maps.Cluster]
-    clusterover: [cluster: kakao.maps.Cluster]
-    clusterout: [cluster: kakao.maps.Cluster]
-    clusterdblclick: [cluster: kakao.maps.Cluster]
-    clusterrightclick: [cluster: kakao.maps.Cluster]
-    clustered: [cluster: kakao.maps.Cluster]
+    clusterclick: [event: { cluster: kakao.maps.Cluster }]
+    clusterover: [event: { cluster: kakao.maps.Cluster }]
+    clusterout: [event: { cluster: kakao.maps.Cluster }]
+    clusterdblclick: [event: { cluster: kakao.maps.Cluster }]
+    clusterrightclick: [event: { cluster: kakao.maps.Cluster }]
+    clustered: [event: { cluster: kakao.maps.Cluster }]
 }>()
 
 // clusterer 객체 설정
@@ -127,7 +127,7 @@ function addListener(clusterer: kakao.maps.MarkerClusterer, type: any, listeners
     if (type in listeners) {
         kakao.maps.event.removeListener(clusterer, type, listeners[type])
     }
-    listeners[type] = (event) => emit(type, event)
+    listeners[type] = (event) => emit(type, { cluster: event })
     kakao.maps.event.addListener(clusterer, type, listeners[type])
 }
 

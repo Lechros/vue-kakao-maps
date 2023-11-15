@@ -2,7 +2,7 @@
 import { useMap } from '@/hooks/useMap';
 import { useMarker } from '@/hooks/useMarker';
 import type { InfoWindowProps } from '@/types/InfoWindowProps';
-import { createLatLng } from '@/utils/create';
+import { toKakaoLatLng } from '@/utils/convert';
 import { onUnmounted, ref, shallowRef, watch } from 'vue';
 
 const props = withDefaults(defineProps<InfoWindowProps>(), {
@@ -46,7 +46,7 @@ watch([infoWindow, map, () => props.open, position], ([infoWindow, map, open, po
 watch([infoWindow, () => props.position], ([infoWindow, position], [, _position]) => {
   if (!infoWindow) return
   if (position === _position) return
-  infoWindow.setPosition(createLatLng(position))
+  infoWindow.setPosition(toKakaoLatLng(position))
 }, { deep: true })
 
 // HTMLElement의 Attribute만 바뀌는 것으로는 업데이트가 안된다.
@@ -84,7 +84,7 @@ onUnmounted(() => {
 function createOptions(props: InfoWindowProps): kakao.maps.InfoWindowOptions {
   return {
     ...props,
-    position: createLatLng(props.position),
+    position: toKakaoLatLng(props.position),
     content: content.value
   }
 }
@@ -100,4 +100,4 @@ function createOptions(props: InfoWindowProps): kakao.maps.InfoWindowOptions {
 .vue-kakao-maps--hidden {
   visibility: hidden;
 }
-</style>
+</style>@/utils/convert

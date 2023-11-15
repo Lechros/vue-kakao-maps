@@ -2,7 +2,7 @@
 import { useMap } from '@/hooks/useMap';
 import { useMarkerClusterer } from '@/hooks/useMarkerClusterer';
 import type { MarkerProps } from '@/types/MarkerProps';
-import { createLatLng } from '@/utils/create';
+import { toKakaoLatLng } from '@/utils/convert';
 import { onUnmounted, provide, ref, shallowRef, watch } from 'vue';
 
 const props = withDefaults(defineProps<MarkerProps>(), {
@@ -20,12 +20,12 @@ const props = withDefaults(defineProps<MarkerProps>(), {
 
 // Events 설정
 const emit = defineEmits<{
-  click: []
-  mouseover: []
-  mouseout: []
-  rightclick: []
-  dragstart: []
-  dragend: []
+  click: [event: {}]
+  mouseover: [event: {}]
+  mouseout: [event: {}]
+  rightclick: [event: {}]
+  dragstart: [event: {}]
+  dragend: [event: {}]
 }>()
 
 const marker = shallowRef<kakao.maps.Marker>(null);
@@ -63,7 +63,7 @@ watch([marker, () => props.position], ([marker, position], [, _position]) => {
   pos.value = position;
   if (!marker) return
   if (position === _position) return
-  marker.setPosition(createLatLng(position))
+  marker.setPosition(toKakaoLatLng(position))
 }, { deep: true })
 
 watch([marker, () => props.zIndex], ([marker, zIndex], [, _zIndex]) => {
@@ -142,7 +142,7 @@ function addListener(marker: kakao.maps.Marker, type: any, listeners: Record<str
   if (type in listeners) {
     kakao.maps.event.removeListener(marker, type, listeners[type])
   }
-  listeners[type] = () => emit(type)
+  listeners[type] = () => emit(type, {})
   kakao.maps.event.addListener(marker, type, listeners[type])
 }
 
@@ -153,11 +153,11 @@ function createOptions(props: MarkerProps): kakao.maps.MarkerOptions {
   return {
     ...props,
     ...parent,
-    position: createLatLng(props.position)
+    position: toKakaoLatLng(props.position)
   }
 }
 </script>
 
 <template>
   <slot></slot>
-</template>
+</template>@/utils/convert

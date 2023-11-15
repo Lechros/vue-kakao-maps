@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import type { KakaoMapProps } from '@/types/KakaoMapProps.js';
+import { LatLng } from '@/types/LatLng';
+import { LatLngBounds } from '@/types/LatLngBounds';
 import { KakaoLoader } from '@/utils/KakaoLoader';
-import { createCopyrightPosition, createLatLng, createMapTypeId } from '@/utils/create';
+import { toKakaoCopyrightPosition, toKakaoLatLng, toKakaoMapTypeId, toLatLng, toLatLngBounds } from '@/utils/convert';
 import { onMounted, provide, ref, shallowRef, watch } from 'vue';
 
 // Props 설정
@@ -21,19 +23,19 @@ const props = withDefaults(defineProps<KakaoMapProps>(), {
 
 // Events 설정
 const emit = defineEmits<{
-  center_changed: []
-  zoom_start: []
-  zoom_changed: []
-  bounds_changed: []
+  center_changed: [event: { center: LatLng }]
+  zoom_start: [event: { level: number }]
+  zoom_changed: [event: { level: number }]
+  bounds_changed: [event: { bounds: LatLngBounds }]
   click: [event: kakao.maps.event.MouseEvent]
   dblclick: [event: kakao.maps.event.MouseEvent]
   rightclick: [event: kakao.maps.event.MouseEvent]
   mousemove: [event: kakao.maps.event.MouseEvent]
-  drag: []
-  dragend: []
-  idle: []
-  tilesloaded: []
-  maptypeid_changed: []
+  drag: [event: {}]
+  dragend: [event: {}]
+  idle: [event: { center: LatLng, level: number }]
+  tilesloaded: [event: { level: number }]
+  maptypeid_changed: [event: { mapTypeId: kakao.maps.MapTypeId }]
 }>()
 
 // 컨테이너 div 및 map 객체 설정
@@ -63,7 +65,7 @@ function init() {
 // 일반적인 속성 watch, 기존 값과 같으면 지도에 반영하지 않음
 watch([map, () => props.center], ([map, center], [, _center]) => {
   if (center === _center) return
-  props.pan ? map.panTo(createLatLng(center)) : map.setCenter(createLatLng(center))
+  props.pan ? map.panTo(toKakaoLatLng(center)) : map.setCenter(toKakaoLatLng(center))
 })
 
 watch([map, () => props.level], ([map, level], [, _level]) => {
@@ -73,7 +75,7 @@ watch([map, () => props.level], ([map, level], [, _level]) => {
 
 watch([map, () => props.mapTypeId], ([map, mapTypeId], [, _mapTypeId]) => {
   if (mapTypeId === _mapTypeId) return
-  map.setMapTypeId(createMapTypeId(mapTypeId))
+  map.setMapTypeId(toKakaoMapTypeId(mapTypeId))
 })
 
 watch([map, () => props.minLevel], ([map, minLevel], [, _minLevel]) => {
@@ -103,7 +105,7 @@ watch([map, () => props.keyboardShortcuts], ([map, keyboardShortcuts], [, _keybo
 
 watch([map, () => props.copyrightPosition, () => props.copyrightReversed], ([map, copyrightPosition, copyrightReversed], [, _copyrightPosition, _copyrightReversed]) => {
   if (copyrightPosition === _copyrightPosition && copyrightReversed === _copyrightReversed) return
-  map.setCopyrightPosition(createCopyrightPosition(copyrightPosition), copyrightReversed)
+  map.setCopyrightPosition(toKakaoCopyrightPosition(copyrightPosition), copyrightReversed)
 })
 
 watch([map, () => props.cursorStyle], ([map, cursorStyle], [, _cursorStyle]) => {
@@ -144,10 +146,29 @@ watch(map, (map) => {
 
 function addListener(map: kakao.maps.Map, type: any, listeners: Record<string, Function>) {
   function createListener(type: any) {
-    if (['click', 'dblclick', 'rightclick', 'mousemove'].includes(type)) {
-      return (event) => emit(type, event)
-    } else {
-      return () => emit(type)
+    switch (type) {
+      case 'center_changed':
+        return () => emit(type, { center: toLatLng(map.getCenter()) })
+      case 'zoom_start':
+        return () => emit(type, { level: map.getLevel() })
+      case 'zoom_changed':
+        return () => emit(type, { level: map.getLevel() })
+      case 'bounds_changed':
+        return () => emit(type, { bounds: toLatLngBounds(map.getBounds()) })
+      case 'click':
+      case 'dblclick':
+      case 'rightclick':
+      case 'mousemove':
+        return (event) => emit(type, event)
+      case 'drag':
+      case 'dragend':
+        return () => emit(type, {})
+      case 'idle':
+        return () => emit(type, { center: toLatLng(map.getCenter()), level: map.getLevel() })
+      case 'tilesloaded':
+        return () => emit(type, { level: map.getLevel() })
+      case 'maptypeid_changed':
+        return () => emit(type, { mapTypeId: map.getMapTypeId() })
     }
   }
 
@@ -161,8 +182,8 @@ function addListener(map: kakao.maps.Map, type: any, listeners: Record<string, F
 function createMapOptions(props: KakaoMapProps): kakao.maps.MapOptions {
   return {
     ...props,
-    center: createLatLng(props.center),
-    mapTypeId: createMapTypeId(props.mapTypeId),
+    center: toKakaoLatLng(props.center),
+    mapTypeId: toKakaoMapTypeId(props.mapTypeId),
   };
 }
 </script>
@@ -173,4 +194,4 @@ function createMapOptions(props: KakaoMapProps): kakao.maps.MapOptions {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped></style>@/utils/convert
