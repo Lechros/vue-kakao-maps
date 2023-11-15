@@ -2,6 +2,7 @@ import type { ControlPosition } from '@/types/ControlPosition'
 import type { CopyrightPosition } from '@/types/CopyrightPosition'
 import type { LatLng } from '@/types/LatLng'
 import type { LatLngBounds } from '@/types/LatLngBounds'
+import type { MapMouseEvent } from '@/types/MapMouseEvent'
 import type { MapTypeId } from '@/types/MapTypeId'
 
 export function toKakaoLatLng(latLng: LatLng): kakao.maps.LatLng {
@@ -16,6 +17,13 @@ export function toLatLngBounds(bounds: kakao.maps.LatLngBounds): LatLngBounds {
   return {
     ne: toLatLng(bounds.getNorthEast()),
     sw: toLatLng(bounds.getSouthWest())
+  }
+}
+
+export function toMapMouseEvent(event: kakao.maps.event.MouseEvent): MapMouseEvent {
+  return {
+    latLng: toLatLng(event.latLng),
+    point: event.point
   }
 }
 

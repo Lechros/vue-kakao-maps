@@ -2,8 +2,9 @@
 import type { KakaoMapProps } from '@/types/KakaoMapProps.js';
 import { LatLng } from '@/types/LatLng';
 import { LatLngBounds } from '@/types/LatLngBounds';
+import { MapMouseEvent } from '@/types/MapMouseEvent';
 import { KakaoLoader } from '@/utils/KakaoLoader';
-import { toKakaoCopyrightPosition, toKakaoLatLng, toKakaoMapTypeId, toLatLng, toLatLngBounds } from '@/utils/convert';
+import { toKakaoCopyrightPosition, toKakaoLatLng, toKakaoMapTypeId, toLatLng, toLatLngBounds, toMapMouseEvent } from '@/utils/convert';
 import { onMounted, provide, ref, shallowRef, watch } from 'vue';
 
 // Props 설정
@@ -27,10 +28,10 @@ const emit = defineEmits<{
   zoom_start: [event: { level: number }]
   zoom_changed: [event: { level: number }]
   bounds_changed: [event: { bounds: LatLngBounds }]
-  click: [event: kakao.maps.event.MouseEvent]
-  dblclick: [event: kakao.maps.event.MouseEvent]
-  rightclick: [event: kakao.maps.event.MouseEvent]
-  mousemove: [event: kakao.maps.event.MouseEvent]
+  click: [event: MapMouseEvent]
+  dblclick: [event: MapMouseEvent]
+  rightclick: [event: MapMouseEvent]
+  mousemove: [event: MapMouseEvent]
   drag: [event: {}]
   dragend: [event: {}]
   idle: [event: { center: LatLng, level: number }]
@@ -159,7 +160,7 @@ function addListener(map: kakao.maps.Map, type: any, listeners: Record<string, F
       case 'dblclick':
       case 'rightclick':
       case 'mousemove':
-        return (event) => emit(type, event)
+        return (event) => emit(type, toMapMouseEvent(event))
       case 'drag':
       case 'dragend':
         return () => emit(type, {})
