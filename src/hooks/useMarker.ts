@@ -1,4 +1,4 @@
-import type { LatLng } from '../types/LatLng'
+import type { LatLng } from '@/types/LatLng'
 import { inject, type Ref } from 'vue'
 
 export function useMarker(component?: string) {

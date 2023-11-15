@@ -1,4 +1,4 @@
-import type { LatLng } from './LatLng'
+import type { LatLng } from '@/types/LatLng'
 
 /**
  * WGS84 좌표계에서 사각영역 정보

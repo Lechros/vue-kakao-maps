@@ -1,4 +1,4 @@
-import { KakaoLoader, type KakaoLoaderOptions } from '../utils/KakaoLoader'
+import { KakaoLoader, type KakaoLoaderOptions } from '@/utils/KakaoLoader'
 import { reactive } from 'vue'
 
 export function useKakaoLoader(options: KakaoLoaderOptions) {

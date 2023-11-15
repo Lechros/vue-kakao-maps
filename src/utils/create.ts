@@ -1,7 +1,7 @@
-import type { ControlPosition } from '../types/ControlPosition'
-import type { CopyrightPosition } from '../types/CopyrightPosition'
-import type { LatLng } from '../types/LatLng'
-import type { MapTypeId } from '../types/MapTypeId'
+import type { ControlPosition } from '@/types/ControlPosition'
+import type { CopyrightPosition } from '@/types/CopyrightPosition'
+import type { LatLng } from '@/types/LatLng'
+import type { MapTypeId } from '@/types/MapTypeId'
 
 export function createLatLng(latLng: LatLng): kakao.maps.LatLng {
   return new kakao.maps.LatLng(latLng.lat, latLng.lng)

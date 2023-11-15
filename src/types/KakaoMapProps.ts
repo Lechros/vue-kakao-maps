@@ -1,6 +1,6 @@
-import type { CopyrightPosition } from './CopyrightPosition'
-import type { LatLng } from './LatLng'
-import type { MapTypeId } from './MapTypeId'
+import type { CopyrightPosition } from '@/types/CopyrightPosition'
+import type { LatLng } from '@/types/LatLng'
+import type { MapTypeId } from '@/types/MapTypeId'
 
 export interface KakaoMapProps {
   /**

@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { useMap } from '@/hooks/useMap';
 import { useMarkerClusterer } from '@/hooks/useMarkerClusterer';
+import type { MarkerProps } from '@/types/MarkerProps';
+import { createLatLng } from '@/utils/create';
 import { onUnmounted, provide, ref, shallowRef, watch } from 'vue';
-import { useMap } from '../hooks/useMap';
-import { MarkerProps } from '../types/MarkerProps.js';
-import { createLatLng } from '../utils/create';
 
 const props = withDefaults(defineProps<MarkerProps>(), {
   open: false,

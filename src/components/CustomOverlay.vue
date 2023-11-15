@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { CustomOverlayProps } from '@/types/CustomOverlayProps';
+import { useMap } from '@/hooks/useMap';
+import type { CustomOverlayProps } from '@/types/CustomOverlayProps';
+import { createLatLng } from '@/utils/create';
 import { onUnmounted, ref, shallowRef, watch } from 'vue';
-import { useMap } from '../hooks/useMap';
-import { createLatLng } from '../utils/create';
 
 const props = withDefaults(defineProps<CustomOverlayProps>(), {
   clickable: false,
