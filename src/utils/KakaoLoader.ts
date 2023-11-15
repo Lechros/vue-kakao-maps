@@ -27,6 +27,9 @@ export class KakaoLoader {
   private static onload: (() => void)[] = []
   private static onerror: ((err?: string | Event) => void)[] = []
 
+  static loaded = ref(false)
+  static error = ref(false)
+
   readonly appKey: string
   readonly libraries: Library[]
 
@@ -65,6 +68,7 @@ export class KakaoLoader {
 
       script.addEventListener('load', () => {
         this.status.value = 'loaded'
+        KakaoLoader.loaded.value = true
         window.kakao.maps.load(() => {
           KakaoLoader.onload.forEach((on) => on())
         })
@@ -72,6 +76,7 @@ export class KakaoLoader {
       })
       script.addEventListener('error', (err) => {
         this.status.value = 'error'
+        KakaoLoader.error.value = true
         KakaoLoader.onerror.forEach((on) => on(err))
         reject(err)
       })
