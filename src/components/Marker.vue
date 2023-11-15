@@ -34,7 +34,6 @@ const { clusterer, count } = useMarkerClusterer("Marker")
 // context 제공
 const pos = ref({ lat: 0, lng: 0 })
 provide("marker", { marker, position: pos })
-// Marker가 모두 추가된 후 MarkerCluster.redraw 호출하기 위해 로드된 개수 추적
 
 watch(map, (map) => {
   if (!map) return
@@ -51,7 +50,7 @@ watch([marker, map], ([marker, map], [_marker, _map]) => {
     clusterer.value.addMarker(marker, true)
     count.value++
   }
-})
+}, { immediate: true })
 
 watch([marker, () => props.image], ([marker, image], [, _image]) => {
   if (!marker) return
@@ -118,7 +117,8 @@ onUnmounted(() => {
   if (!marker.value) return
 
   if (clusterer && clusterer.value) {
-    clusterer.value.removeMarker(marker.value)
+    clusterer.value.removeMarker(marker.value, true)
+    count.value++
   } else {
     marker.value.setMap(null)
   }

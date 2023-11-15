@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onUnmounted, provide, ref, shallowRef, useSlots, watch } from "vue";
+import { onUnmounted, provide, ref, shallowRef, watch } from "vue";
 import { useMap } from "../hooks/useMap";
 import type { MarkerClustererProps } from "../types/MarkerClustererProps";
 
@@ -28,8 +28,7 @@ const emit = defineEmits<{
 // clusterer 객체 설정
 const clusterer = shallowRef<kakao.maps.MarkerClusterer>(null)
 const map = useMap("MarkerClusterer")
-// Marker가 모두 추가된 후 MarkerCluster.redraw 호출하기 위해 로드된 개수 추적
-const slots = useSlots()
+// MarkerCluster.redraw 호출하기 위해 Marker 변동 사항 추적
 const count = ref(0)
 // context 제공
 provide('clusterer', { clusterer, count })
@@ -47,11 +46,8 @@ watch(map, (map) => {
     clusterer.value = new kakao.maps.MarkerClusterer(options)
 }, { immediate: true })
 
-const markerMountedWatcher = watch(count, (count) => {
-    if (count === slots.default()[0].children.length) {
-        clusterer.value.redraw()
-        markerMountedWatcher()
-    }
+watch(count, () => {
+    clusterer.value.redraw()
 }, { flush: "post" })
 
 watch([clusterer, () => props.gridSize], ([clusterer, gridSize], [, _gridSize]) => {
