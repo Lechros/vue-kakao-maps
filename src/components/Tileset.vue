@@ -52,3 +52,5 @@ function createOptions(props: TilesetProps): kakao.maps.TilesetOptions {
   return props;
 }
 </script>
+
+<slot></slot>

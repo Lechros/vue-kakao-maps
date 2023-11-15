@@ -36,9 +36,8 @@ watch([overlay, content], ([overlay, content]) => {
   overlay.setContent(content)
 }, { deep: true })
 
-watch([overlay, () => props.visible], ([marker, visible], [, _visible]) => {
+watch([overlay, () => props.visible], ([marker, visible]) => {
   if (!marker) return
-  if (visible === _visible) return
   marker.setVisible(visible)
 })
 
