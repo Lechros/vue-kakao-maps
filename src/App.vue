@@ -44,7 +44,7 @@ useKakaoLoader({ appKey: import.meta.env.VITE_KAKAO_JAVASCRIPT_APP_KEY!, librari
 
 <template>
   <KakaoMap :center="{ lat: 37.5013, lng: 127.0395 }" :level="8" style="width: 100%; height: 95vh;"
-    @click="(ev) => pos = { lat: ev.latLng.getLat(), lng: ev.latLng.getLng() }">
+    @click="({ latLng }) => pos = latLng" @bounds_changed="(ev) => console.log('Bounds changed:', ev.bounds)">
     <Marker :position="pos" @mouseover="open = true" @mouseout="open = false">
       <InfoWindow :open="open">
         <div style="width: 100px; padding: 5px 5px;">
@@ -79,6 +79,7 @@ useKakaoLoader({ appKey: import.meta.env.VITE_KAKAO_JAVASCRIPT_APP_KEY!, librari
     <Tileset :width="256" :height="256" :getTile="getTile" />
   </KakaoMap>
   <button @click="showCustomOverlay = !showCustomOverlay">커스텀 오버레이 토글</button>
+  클릭한 위치의 위도는 {{ pos.lat }}이고, 경도는 {{ pos.lng }}입니다.
 </template>
 
 <style scoped>

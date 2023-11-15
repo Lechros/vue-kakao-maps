@@ -148,6 +148,27 @@ function getTile(x, y, z) {
 </KakaoMap>
 ```
 
+### 클릭한 위치에 마커 표시하기
+
+```vue
+<script setup>
+import { KakaoMap, Marker, useKakaoLoader } from 'vue-kakao-maps'
+
+useKakaoLoader({ appKey: '...' })
+
+const position = ref({ lat: 37.5013, lng: 127.0395 })
+</script>
+
+<KakaoMap
+  :center="{ lat: 37.5013, lng: 127.0395 }"
+  style="width: 100%; height: 500px"
+  @click="({ latLng }) => (position = latLng)"
+>
+  <Marker :position="position" />
+</KakaoMap>
+클릭한 위치의 위도는 {{ position.lat }}이고, 경도는 {{ position.lng }}입니다.
+```
+
 ## Working list
 
 - Map
