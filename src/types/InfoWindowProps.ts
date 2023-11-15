@@ -1,4 +1,4 @@
-import type { LatLng } from './LatLng.d'
+import type { LatLng } from './LatLng'
 
 export interface InfoWindowProps {
   /**

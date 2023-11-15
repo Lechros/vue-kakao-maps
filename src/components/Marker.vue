@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useMarkerClusterer } from '@/hooks/useMarkerClusterer';
-import { inject, onUnmounted, provide, shallowRef, watch } from 'vue';
+import { onUnmounted, provide, shallowRef, watch } from 'vue';
 import { useMap } from '../hooks/useMap';
 import { MarkerProps } from '../types/MarkerProps.js';
 import { createLatLng } from '../utils/create';
@@ -30,11 +30,10 @@ const emit = defineEmits<{
 
 const marker = shallowRef<kakao.maps.Marker>(null);
 const map = useMap("Marker")
-const clusterer = useMarkerClusterer("Marker")
+const { clusterer, count } = useMarkerClusterer("Marker")
 // context 제공
 provide("marker", { marker })
 // Marker가 모두 추가된 후 MarkerCluster.redraw 호출하기 위해 로드된 개수 추적
-const count = inject('markerCount').count
 
 watch(map, (map) => {
   if (!map) return

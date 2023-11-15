@@ -1,6 +1,6 @@
-import { inject } from 'vue'
+import { inject, type Ref } from 'vue'
 
-export function useMarker(component) {
-  const context = inject('marker', undefined)
+export function useMarker(component?: string) {
+  const context = inject<{ marker: Ref<kakao.maps.Marker> } | undefined>('marker', undefined)
   return context?.marker
 }

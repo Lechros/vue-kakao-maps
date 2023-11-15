@@ -28,12 +28,11 @@ const emit = defineEmits<{
 // clusterer 객체 설정
 const clusterer = shallowRef<kakao.maps.MarkerClusterer>(null)
 const map = useMap("MarkerClusterer")
-// context 제공
-provide('clusterer', { clusterer })
 // Marker가 모두 추가된 후 MarkerCluster.redraw 호출하기 위해 로드된 개수 추적
 const slots = useSlots()
 const count = ref(0)
-provide('markerCount', { count })
+// context 제공
+provide('clusterer', { clusterer, count })
 
 watch(map, (map) => {
     if (!map) return

@@ -1,7 +1,7 @@
-import { KakaoLoader } from '@/utils/KakaoLoader'
+import { KakaoLoader, type KakaoLoaderOptions } from '../utils/KakaoLoader'
 import { reactive } from 'vue'
 
-export function useKakaoLoader(options) {
+export function useKakaoLoader(options: KakaoLoaderOptions) {
   const state = reactive({
     load: false,
     error: undefined
