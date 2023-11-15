@@ -21,19 +21,19 @@ const props = withDefaults(defineProps<KakaoMapProps>(), {
 
 // Events 설정
 const emit = defineEmits<{
-  center_changed: [map: kakao.maps.Map]
-  zoom_start: [map: kakao.maps.Map]
-  zoom_changed: [map: kakao.maps.Map]
-  bounds_changed: [map: kakao.maps.Map]
-  click: [mouseEvent: MouseEvent, map: kakao.maps.Map]
-  dblclick: [mouseEvent: MouseEvent, map: kakao.maps.Map]
-  rightclick: [mouseEvent: MouseEvent, map: kakao.maps.Map]
-  mousemove: [mouseEvent: MouseEvent, map: kakao.maps.Map]
-  drag: [map: kakao.maps.Map]
-  dragend: [map: kakao.maps.Map]
-  idle: [map: kakao.maps.Map]
-  tilesloaded: [map: kakao.maps.Map]
-  maptypeid_changed: [map: kakao.maps.Map]
+  center_changed: []
+  zoom_start: []
+  zoom_changed: []
+  bounds_changed: []
+  click: [event: kakao.maps.event.MouseEvent]
+  dblclick: [event: kakao.maps.event.MouseEvent]
+  rightclick: [event: kakao.maps.event.MouseEvent]
+  mousemove: [event: kakao.maps.event.MouseEvent]
+  drag: []
+  dragend: []
+  idle: []
+  tilesloaded: []
+  maptypeid_changed: []
 }>()
 
 // 컨테이너 div 및 map 객체 설정
@@ -143,18 +143,18 @@ watch(map, (map) => {
 })
 
 function addListener(map: kakao.maps.Map, type: any, listeners: Record<string, Function>) {
-  function createListener(map: kakao.maps.Map, type: any) {
+  function createListener(type: any) {
     if (['click', 'dblclick', 'rightclick', 'mousemove'].includes(type)) {
-      return (ev) => emit(type, ev, map)
+      return (event) => emit(type, event)
     } else {
-      return () => emit(type, map)
+      return () => emit(type)
     }
   }
 
   if (type in listeners) {
     kakao.maps.event.removeListener(map, type, listeners[type])
   }
-  listeners[type] = createListener(map, type)
+  listeners[type] = createListener(type)
   kakao.maps.event.addListener(map, type, listeners[type])
 }
 

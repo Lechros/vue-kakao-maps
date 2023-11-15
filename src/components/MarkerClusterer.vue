@@ -17,12 +17,12 @@ const props = withDefaults(defineProps<MarkerClustererProps>(), {
 })
 
 const emit = defineEmits<{
-    clusterclick: [cluster: kakao.maps.MarkerClusterer, map: kakao.maps.Map]
-    clusterover: [cluster: kakao.maps.MarkerClusterer, map: kakao.maps.Map]
-    clusterout: [cluster: kakao.maps.MarkerClusterer, map: kakao.maps.Map]
-    clusterdblclick: [cluster: kakao.maps.MarkerClusterer, map: kakao.maps.Map]
-    clusterrightclick: [cluster: kakao.maps.MarkerClusterer, map: kakao.maps.Map]
-    clustered: [cluster: kakao.maps.MarkerClusterer, map: kakao.maps.Map]
+    clusterclick: [cluster: kakao.maps.Cluster]
+    clusterover: [cluster: kakao.maps.Cluster]
+    clusterout: [cluster: kakao.maps.Cluster]
+    clusterdblclick: [cluster: kakao.maps.Cluster]
+    clusterrightclick: [cluster: kakao.maps.Cluster]
+    clustered: [cluster: kakao.maps.Cluster]
 }>()
 
 // clusterer 객체 설정
@@ -111,23 +111,23 @@ onUnmounted(() => {
 
 // 지도 Event emit
 const listeners: Record<string, () => void> = {};
-watch([clusterer, map], ([clusterer, map]) => {
+watch([clusterer, map], ([clusterer,]) => {
     if (!window.kakao || !window.kakao.maps) return
     if (!clusterer) return
 
-    addListener(clusterer, map, 'clusterclick', listeners)
-    addListener(clusterer, map, 'clusterover', listeners)
-    addListener(clusterer, map, 'clusterout', listeners)
-    addListener(clusterer, map, 'clusterdblclick', listeners)
-    addListener(clusterer, map, 'clusterrightclick', listeners)
-    addListener(clusterer, map, 'clustered', listeners)
+    addListener(clusterer, 'clusterclick', listeners)
+    addListener(clusterer, 'clusterover', listeners)
+    addListener(clusterer, 'clusterout', listeners)
+    addListener(clusterer, 'clusterdblclick', listeners)
+    addListener(clusterer, 'clusterrightclick', listeners)
+    addListener(clusterer, 'clustered', listeners)
 }, { immediate: true })
 
-function addListener(clusterer: kakao.maps.MarkerClusterer, map: kakao.maps.Map, type: any, listeners: Record<string, Function>) {
+function addListener(clusterer: kakao.maps.MarkerClusterer, type: any, listeners: Record<string, Function>) {
     if (type in listeners) {
         kakao.maps.event.removeListener(clusterer, type, listeners[type])
     }
-    listeners[type] = () => emit(type, clusterer, map)
+    listeners[type] = (event) => emit(type, event)
     kakao.maps.event.addListener(clusterer, type, listeners[type])
 }
 

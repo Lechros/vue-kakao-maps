@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useMarkerClusterer } from '@/hooks/useMarkerClusterer';
-import { onUnmounted, provide, shallowRef, watch } from 'vue';
+import { onUnmounted, provide, ref, shallowRef, watch } from 'vue';
 import { useMap } from '../hooks/useMap';
 import { MarkerProps } from '../types/MarkerProps.js';
 import { createLatLng } from '../utils/create';
@@ -20,19 +20,20 @@ const props = withDefaults(defineProps<MarkerProps>(), {
 
 // Events 설정
 const emit = defineEmits<{
-  click: [marker: kakao.maps.Marker, map: kakao.maps.Map]
-  mouseover: [marker: kakao.maps.Marker, map: kakao.maps.Map]
-  mouseout: [marker: kakao.maps.Marker, map: kakao.maps.Map]
-  rightclick: [marker: kakao.maps.Marker, map: kakao.maps.Map]
-  dragstart: [marker: kakao.maps.Marker, map: kakao.maps.Map]
-  dragend: [marker: kakao.maps.Marker, map: kakao.maps.Map]
+  click: []
+  mouseover: []
+  mouseout: []
+  rightclick: []
+  dragstart: []
+  dragend: []
 }>()
 
 const marker = shallowRef<kakao.maps.Marker>(null);
 const map = useMap("Marker")
 const { clusterer, count } = useMarkerClusterer("Marker")
 // context 제공
-provide("marker", { marker })
+const pos = ref({ lat: 0, lng: 0 })
+provide("marker", { marker, position: pos })
 // Marker가 모두 추가된 후 MarkerCluster.redraw 호출하기 위해 로드된 개수 추적
 
 watch(map, (map) => {
@@ -59,6 +60,7 @@ watch([marker, () => props.image], ([marker, image], [, _image]) => {
 }, { deep: true })
 
 watch([marker, () => props.position], ([marker, position], [, _position]) => {
+  pos.value = position;
   if (!marker) return
   if (position === _position) return
   marker.setPosition(createLatLng(position))
@@ -124,23 +126,23 @@ onUnmounted(() => {
 
 // 지도 Event emit
 const listeners: Record<string, () => void> = {};
-watch([marker, map], ([marker, map]) => {
+watch([marker, map], ([marker,]) => {
   if (!window.kakao || !window.kakao.maps) return
   if (!marker) return
 
-  addListener(marker, map, 'click', listeners)
-  addListener(marker, map, 'mouseover', listeners)
-  addListener(marker, map, 'mouseout', listeners)
-  addListener(marker, map, 'rightclick', listeners)
-  addListener(marker, map, 'dragstart', listeners)
-  addListener(marker, map, 'dragend', listeners)
+  addListener(marker, 'click', listeners)
+  addListener(marker, 'mouseover', listeners)
+  addListener(marker, 'mouseout', listeners)
+  addListener(marker, 'rightclick', listeners)
+  addListener(marker, 'dragstart', listeners)
+  addListener(marker, 'dragend', listeners)
 }, { immediate: true })
 
-function addListener(marker: kakao.maps.Marker, map: kakao.maps.Map, type: any, listeners: Record<string, Function>) {
+function addListener(marker: kakao.maps.Marker, type: any, listeners: Record<string, Function>) {
   if (type in listeners) {
     kakao.maps.event.removeListener(marker, type, listeners[type])
   }
-  listeners[type] = () => emit(type, marker, map)
+  listeners[type] = () => emit(type)
   kakao.maps.event.addListener(marker, type, listeners[type])
 }
 

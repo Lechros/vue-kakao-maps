@@ -7,7 +7,7 @@ import { createLatLng } from '../utils/create';
 
 const props = withDefaults(defineProps<InfoWindowProps>(), {
   open: false,
-  position: () => ({ latitude: 0, longitude: 0 }),
+  position: () => ({ lat: 0, lng: 0 }),
   disableAutoPan: false,
   removable: false,
   zIndex: undefined,
@@ -15,7 +15,7 @@ const props = withDefaults(defineProps<InfoWindowProps>(), {
 
 const infoWindow = shallowRef<kakao.maps.InfoWindow>(null);
 const map = useMap("InfoWindow")
-const marker = useMarker("InfoWindow")
+const { marker, position } = useMarker("InfoWindow")
 const content = ref<HTMLDivElement>(null)
 const hidden = ref(true)
 
@@ -28,11 +28,12 @@ watch(map, (map) => {
   infoWindow.value = new kakao.maps.InfoWindow(options)
 }, { immediate: true })
 
-watch([infoWindow, map, () => props.open], ([infoWindow, map, open], [, _map, _open]) => {
+watch([infoWindow, map, () => props.open, position], ([infoWindow, map, open, position], [, _map, _open, _position]) => {
   if (!infoWindow) return
-  if (map === _map && open === _open) return
+  if (map === _map && open === _open && position.lat == _position.lat && position.lng == _position.lng) return
   if (open) {
     if (marker) {
+      infoWindow.close()
       infoWindow.open(map, marker.value)
     } else {
       infoWindow.open(map)
@@ -40,7 +41,7 @@ watch([infoWindow, map, () => props.open], ([infoWindow, map, open], [, _map, _o
   } else {
     infoWindow.close()
   }
-})
+}, { deep: true })
 
 watch([infoWindow, () => props.position], ([infoWindow, position], [, _position]) => {
   if (!infoWindow) return
