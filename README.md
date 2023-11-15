@@ -123,6 +123,31 @@ fetch('https://apis.map.kakao.com/download/web/data/chicken.json')
 </KakaoMap>
 ```
 
+### 커스텀 타일셋2
+
+```vue
+<script setup>
+import { KakaoMap, Tileset, useKakaoLoader } from 'vue-kakao-maps'
+
+useKakaoLoader({ appKey: '...' })
+
+function getTile(x, y, z) {
+  const div = document.createElement('div');
+  div.innerHTML = x + ', ' + y + ', ' + z;
+  div.style.fontSize = '36px';
+  div.style.fontWeight = 'bold';
+  div.style.lineHeight = '256px'
+  div.style.textAlign = 'center';
+  div.style.color = '#4D4D4D';
+  div.style.border = '1px dashed #ff5050';
+  return div;
+}
+
+<KakaoMap :center="{ lat: 37.5013, lng: 127.0395 }" style="width: 100%; height: 500px">
+  <Tileset :width="256" :height="256" :getTile="getTile" />
+</KakaoMap>
+```
+
 ## Working list
 
 - Map
@@ -132,3 +157,4 @@ fetch('https://apis.map.kakao.com/download/web/data/chicken.json')
   - ZoomControl
   - CustomOverlay
   - MarkerClusterer
+  - Tileset
