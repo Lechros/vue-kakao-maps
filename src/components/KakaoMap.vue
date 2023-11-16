@@ -1,29 +1,37 @@
 <script setup lang="ts">
-import type { KakaoMapProps } from '@/types/KakaoMapProps.js';
-import { LatLng } from '@/types/LatLng';
-import { LatLngBounds } from '@/types/LatLngBounds';
-import { MapMouseEvent } from '@/types/MapMouseEvent';
-import { KakaoLoader } from '@/utils/KakaoLoader';
-import { toKakaoCopyrightPosition, toKakaoLatLng, toKakaoMapTypeId, toLatLng, toLatLngBounds, toMapMouseEvent } from '@/utils/convert';
-import { onMounted, provide, ref, shallowRef, watch } from 'vue';
+import type { KakaoMapProps } from '@/types/KakaoMapProps.js'
+import { LatLng } from '@/types/LatLng'
+import { LatLngBounds } from '@/types/LatLngBounds'
+import { MapMouseEvent } from '@/types/MapMouseEvent'
+import { KakaoLoader } from '@/utils/KakaoLoader'
+import {
+  toKakaoCopyrightPosition,
+  toKakaoLatLng,
+  toKakaoMapTypeId,
+  toLatLng,
+  toLatLngBounds,
+  toMapMouseEvent
+} from '@/utils/convert'
+import { onMounted, provide, ref, shallowRef, watch } from 'vue'
 
 // Props 설정
 const props = withDefaults(defineProps<KakaoMapProps>(), {
   level: 3,
-  mapTypeId: "ROADMAP",
+  mapTypeId: 'ROADMAP',
   draggable: true,
   zoomable: true,
   disableDoubleClick: false,
   disableDoubleClickZoom: false,
   tileAnimation: true,
   keyboardShortcuts: false,
-  copyrightPosition: "BOTTOMLEFT",
+  copyrightPosition: 'BOTTOMLEFT',
   copyrightReversed: false,
-  pan: false,
+  pan: false
 })
 
 // Events 설정
 const emit = defineEmits<{
+  load: [event: { center: LatLng; level: number; bounds: LatLngBounds }]
   center_changed: [event: { center: LatLng }]
   zoom_start: [event: { level: number }]
   zoom_changed: [event: { level: number }]
@@ -34,7 +42,7 @@ const emit = defineEmits<{
   mousemove: [event: MapMouseEvent]
   drag: [event: {}]
   dragend: [event: {}]
-  idle: [event: { center: LatLng, level: number }]
+  idle: [event: { center: LatLng; level: number }]
   tilesloaded: [event: { level: number }]
   maptypeid_changed: [event: { mapTypeId: kakao.maps.MapTypeId }]
 }>()
@@ -43,7 +51,7 @@ const emit = defineEmits<{
 const container = ref<HTMLDivElement>(null)
 const map = shallowRef<kakao.maps.Map>(null)
 // context 제공
-provide("map", { map })
+provide('map', { map })
 
 // useKakaoLoader() 사용할 경우 script 로드 완료 후 init 실행
 KakaoLoader.addLoadEventListener(init)
@@ -61,6 +69,11 @@ function init() {
 
   const options = createMapOptions(props)
   map.value = new kakao.maps.Map(container.value, options)
+  emit('load', {
+    center: toLatLng(map.value.getCenter()),
+    level: map.value.getLevel(),
+    bounds: toLatLngBounds(map.value.getBounds())
+  })
 }
 
 // 일반적인 속성 watch, 기존 값과 같으면 지도에 반영하지 않음
@@ -104,10 +117,13 @@ watch([map, () => props.keyboardShortcuts], ([map, keyboardShortcuts], [, _keybo
   map.setKeyboardShortcuts(keyboardShortcuts !== false)
 })
 
-watch([map, () => props.copyrightPosition, () => props.copyrightReversed], ([map, copyrightPosition, copyrightReversed], [, _copyrightPosition, _copyrightReversed]) => {
-  if (copyrightPosition === _copyrightPosition && copyrightReversed === _copyrightReversed) return
-  map.setCopyrightPosition(toKakaoCopyrightPosition(copyrightPosition), copyrightReversed)
-})
+watch(
+  [map, () => props.copyrightPosition, () => props.copyrightReversed],
+  ([map, copyrightPosition, copyrightReversed], [, _copyrightPosition, _copyrightReversed]) => {
+    if (copyrightPosition === _copyrightPosition && copyrightReversed === _copyrightReversed) return
+    map.setCopyrightPosition(toKakaoCopyrightPosition(copyrightPosition), copyrightReversed)
+  }
+)
 
 watch([map, () => props.cursorStyle], ([map, cursorStyle], [, _cursorStyle]) => {
   if (cursorStyle === _cursorStyle) return
@@ -125,7 +141,7 @@ watch([container, map], ([container, map]) => {
 })
 
 // 지도 Event emit
-const listeners: Record<string, () => void> = {};
+const listeners: Record<string, () => void> = {}
 watch(map, (map) => {
   if (!window.kakao || !window.kakao.maps) return
   if (!map) return
@@ -184,8 +200,8 @@ function createMapOptions(props: KakaoMapProps): kakao.maps.MapOptions {
   return {
     ...props,
     center: toKakaoLatLng(props.center),
-    mapTypeId: toKakaoMapTypeId(props.mapTypeId),
-  };
+    mapTypeId: toKakaoMapTypeId(props.mapTypeId)
+  }
 }
 </script>
 
@@ -195,4 +211,5 @@ function createMapOptions(props: KakaoMapProps): kakao.maps.MapOptions {
   </div>
 </template>
 
-<style scoped></style>@/utils/convert
+<style scoped></style>
+@/utils/convert
