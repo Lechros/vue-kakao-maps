@@ -76,19 +76,21 @@ function init() {
   })
 }
 
-// 일반적인 속성 watch, 기존 값과 같으면 지도에 반영하지 않음
-watch([map, () => props.center], ([map, center], [, _center]) => {
-  if (center === _center) return
-  props.pan ? map.panTo(toKakaoLatLng(center)) : map.setCenter(toKakaoLatLng(center))
-})
+// 일반적인 속성 watch, 현재 지도의 상태와 같으면 지도에 반영하지 않음
+watch([map, () => props.center, () => props.level], ([map, center, level]) => {
+  const mapCenter = map.getCenter()
+  if (center.lat !== mapCenter.getLat() || center.lat !== mapCenter.getLng()) {
+    if (level !== map.getLevel()) { // center, level 변화
+      map.setLevel(level, { animate: props.pan, anchor: toKakaoLatLng(center) })
+    } else { // center 변화
+      props.pan ? map.panTo(toKakaoLatLng(center)) : map.setCenter(toKakaoLatLng(center))
+    }
+  } else if (level !== map.getLevel()) { // level 변화
+    map.setLevel(level, { animate: props.pan })
+  }
+}, { deep: true, flush: 'post' })
 
-watch([map, () => props.level], ([map, level], [, _level]) => {
-  if (level === _level) return
-  map.setLevel(level)
-})
-
-watch([map, () => props.mapTypeId], ([map, mapTypeId], [, _mapTypeId]) => {
-  if (mapTypeId === _mapTypeId) return
+watch([map, () => props.mapTypeId], ([map, mapTypeId]) => {
   map.setMapTypeId(toKakaoMapTypeId(mapTypeId))
 })
 
@@ -102,18 +104,18 @@ watch([map, () => props.maxLevel], ([map, maxLevel], [, _maxLevel]) => {
   map.setMaxLevel(maxLevel)
 })
 
-watch([map, () => props.draggable], ([map, draggable], [, _draggable]) => {
-  if (draggable === _draggable) return
+watch([map, () => props.draggable], ([map, draggable]) => {
+  if (draggable === map.getDraggable()) return
   map.setDraggable(draggable)
 })
 
-watch([map, () => props.zoomable], ([map, zoomable], [, _zoomable]) => {
-  if (zoomable === _zoomable) return
+watch([map, () => props.zoomable], ([map, zoomable]) => {
+  if (zoomable === map.getZoomable()) return
   map.setZoomable(zoomable)
 })
 
-watch([map, () => props.keyboardShortcuts], ([map, keyboardShortcuts], [, _keyboardShortcuts]) => {
-  if (keyboardShortcuts === _keyboardShortcuts) return
+watch([map, () => props.keyboardShortcuts], ([map, keyboardShortcuts]) => {
+  if (keyboardShortcuts === map.getKeyboardShortcuts()) return
   map.setKeyboardShortcuts(keyboardShortcuts !== false)
 })
 
@@ -212,4 +214,3 @@ function createMapOptions(props: KakaoMapProps): kakao.maps.MapOptions {
 </template>
 
 <style scoped></style>
-@/utils/convert
