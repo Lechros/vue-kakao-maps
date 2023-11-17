@@ -77,18 +77,16 @@ function init() {
 }
 
 // 일반적인 속성 watch, 현재 지도의 상태와 같으면 지도에 반영하지 않음
-watch([map, () => props.center, () => props.level], ([map, center, level]) => {
+watch([map, () => props.center], ([map, center]) => {
   const mapCenter = map.getCenter()
-  if (center.lat !== mapCenter.getLat() || center.lat !== mapCenter.getLng()) {
-    if (level !== map.getLevel()) { // center, level 변화
-      map.setLevel(level, { animate: props.pan, anchor: toKakaoLatLng(center) })
-    } else { // center 변화
-      props.pan ? map.panTo(toKakaoLatLng(center)) : map.setCenter(toKakaoLatLng(center))
-    }
-  } else if (level !== map.getLevel()) { // level 변화
-    map.setLevel(level, { animate: props.pan })
-  }
+  if (center.lat === mapCenter.getLat() && center.lat === mapCenter.getLng()) return
+  props.pan ? map.panTo(toKakaoLatLng(center)) : map.setCenter(toKakaoLatLng(center))
 }, { deep: true, flush: 'post' })
+
+watch([map, () => props.level], ([map, level]) => {
+  if (level === map.getLevel()) return
+  map.setLevel(level, { animate: props.pan })
+}, { flush: 'post' })
 
 watch([map, () => props.mapTypeId], ([map, mapTypeId]) => {
   map.setMapTypeId(toKakaoMapTypeId(mapTypeId))
