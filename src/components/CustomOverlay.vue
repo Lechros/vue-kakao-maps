@@ -3,7 +3,7 @@ import { useMap } from '@/hooks/useMap'
 import { useMarkerClusterer } from '@/hooks/useMarkerClusterer'
 import type { CustomOverlayProps } from '@/types/CustomOverlayProps'
 import { toKakaoLatLng } from '@/utils/convert'
-import { onUnmounted, ref, shallowRef, watch } from 'vue'
+import { onUnmounted, ref, shallowRef, useSlots, watch } from 'vue'
 
 const props = withDefaults(defineProps<CustomOverlayProps>(), {
   clickable: false,
@@ -17,16 +17,14 @@ const overlay = shallowRef<kakao.maps.CustomOverlay>(null)
 const map = useMap('CustomOverlay')
 const { clusterer, count } = useMarkerClusterer('CustomOverlay')
 const content = shallowRef<HTMLDivElement>(null)
-const hidden = ref(true)
 
 watch(map, (map) => {
   if (!map) return
   if (overlay.value) return
 
-  hidden.value = false
   const options = createOptions(props)
   overlay.value = new kakao.maps.CustomOverlay(options)
-  overlay.value.setContent(content.value)
+  overlay.value.setContent(content.value.innerHTML)
 }, { immediate: true })
 
 watch([overlay, map], ([overlay, map], [_overlay, _map]) => {
@@ -45,9 +43,16 @@ watch([overlay, () => props.position], ([overlay, position], [, _position]) => {
 }, { deep: true })
 
 // HTMLElement의 Attribute만 바뀌는 것으로는 업데이트가 안된다.
-watch([overlay, content], ([overlay, content]) => {
+// watch([overlay, content], ([overlay, content]) => {
+//   if (!overlay) return
+//   overlay.setContent(content.innerHTML)
+// }, { deep: true })
+
+const slots = useSlots()
+
+watch([overlay, () => slots.default()], ([overlay, slot]) => {
   if (!overlay) return
-  overlay.setContent(content)
+  overlay.setContent(content.value.innerHTML)
 }, { deep: true })
 
 watch([overlay, () => props.visible], ([overlay, visible], [, _visible]) => {
@@ -76,7 +81,6 @@ watch([overlay, () => props.range], ([overlay, range], [, _range]) => {
 
 onUnmounted(() => {
   if (!overlay.value) return
-  hidden.value = true
   if (clusterer && clusterer.value) {
     clusterer.value.removeMarker(overlay.value, true)
     count.value++
@@ -96,7 +100,7 @@ function createOptions(props: CustomOverlayProps): kakao.maps.CustomOverlayOptio
 </script>
 
 <template>
-  <div ref="content" :class="{ 'vue-kakao-maps--hidden': hidden }">
+  <div ref="content" class="vue-kakao-maps--hidden">
     <slot></slot>
   </div>
 </template>

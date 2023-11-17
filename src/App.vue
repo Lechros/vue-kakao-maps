@@ -13,10 +13,26 @@ const showCustomOverlay = ref(false)
 const pos = ref({ lat: 0, lng: 0 })
 const open = ref(false)
 
+const str = ref("hello")
+
+const center = ref({ lat: 37.5013, lng: 127.0395 })
+const centerOut = ref({ lat: 37.5013, lng: 127.0395 })
+const level = ref(8)
+
 const data = ref([])
+let cnt = 0
 fetch('https://apis.map.kakao.com/download/web/data/chicken.json')
   .then((res) => res.json())
-  .then((json) => (data.value = json.positions))
+  .then((json) => (data.value = json.positions.map(pos => ({ ...pos, id: cnt++ }))))
+  .then(data => cnt = data.length)
+setInterval(() => {
+  for (let i = 0; i < 20; ++i) {
+    const idx = Math.floor(Math.random() * data.value.length)
+    data.value[idx].id = ++cnt
+    data.value[idx].lat += 0.001
+    data.value[idx].lng += 0.001
+  }
+}, 500)
 
 function getFloodUrl(x: number, y: number, z: number) {
   const l = Math.pow(2, z) * 80
@@ -43,14 +59,10 @@ useKakaoLoader({ appKey: import.meta.env.VITE_KAKAO_JAVASCRIPT_APP_KEY!, librari
 </script>
 
 <template>
-  <KakaoMap
-    :center="{ lat: 37.5013, lng: 127.0395 }"
-    :level="8"
-    style="width: 100%; height: 95vh"
-    @click="({ latLng }) => (pos = latLng)"
+  <KakaoMap pan :center="center" :level="level" style="width: 100%; height: 90vh" @click="({ latLng }) => (pos = latLng)"
+    @center_changed="(ev) => { centerOut = ev.center; console.log(ev) }"
     @bounds_changed="(ev) => console.log('Bounds changed:', ev.bounds)"
-    @load="({ bounds }) => console.log('Initial bounds:', bounds)"
-  >
+    @load="({ bounds }) => console.log('Initial bounds:', bounds)">
     <Marker :position="pos" @mouseover="open = true" @mouseout="open = false">
       <InfoWindow :open="open">
         <div style="width: 100px; padding: 5px 5px">
@@ -64,11 +76,11 @@ useKakaoLoader({ appKey: import.meta.env.VITE_KAKAO_JAVASCRIPT_APP_KEY!, librari
       </InfoWindow>
     </Marker>
     <MarkerClusterer average-center :min-level="10" @clusterover="(ev) => console.log(ev)">
-      <Marker v-for="(pos, i) in data" :position="pos" :key="i" />
-      <CustomOverlay clickable v-for="(pos, i) in data" :position="pos" :key="i">
-        <div style="background-color: red">Hello</div>
-      </CustomOverlay>
+      <Marker v-for="(pos, i) in data" :position="pos" :key="pos.id" />
     </MarkerClusterer>
+    <!-- <CustomOverlay clickable v-for="(pos, i) in data" :position="pos" :key="pos.id">
+      <div style="background-color: red">{{ str }}</div>
+    </CustomOverlay> -->
     <CustomOverlay :position="{ lat: 37.5, lng: 127.1 }" :visible="showCustomOverlay">
       <div class="overlaybox">
         <div class="boxtitle">금주 영화순위</div>
@@ -100,7 +112,13 @@ useKakaoLoader({ appKey: import.meta.env.VITE_KAKAO_JAVASCRIPT_APP_KEY!, librari
     <Tileset :width="256" :height="256" :getTile="getTile" />
   </KakaoMap>
   <button @click="showCustomOverlay = !showCustomOverlay">커스텀 오버레이 토글</button>
+  <button @click="() => { str = Math.random().toFixed(3); console.log('changed to:', str) }">커스텀 오버레이 마커 내용 변경</button>
+  <button @click="level = 5">zoom 5로 설정</button>
+  <button @click="level = 6">zoom 6으로 설정</button>
+  <button @click="level = 6; center = { lat: 37.5013, lng: 127.0395 }">zoom 6으로 설정하고 역삼으로 이동</button>
+  <button @click="center = { lat: 37, lng: 127 }">37,127로 이동</button>
   클릭한 위치의 위도는 {{ pos.lat }}이고, 경도는 {{ pos.lng }}입니다.
+  현재 위치: {{ centerOut.lat }}, {{ centerOut.lng }}
 </template>
 
 <style scoped>
@@ -108,8 +126,7 @@ useKakaoLoader({ appKey: import.meta.env.VITE_KAKAO_JAVASCRIPT_APP_KEY!, librari
   position: relative;
   width: 360px;
   height: 350px;
-  background: url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/box_movie.png')
-    no-repeat;
+  background: url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/box_movie.png') no-repeat;
   padding: 15px 10px;
 }
 
@@ -128,8 +145,7 @@ ul {
   color: #fff;
   font-size: 16px;
   font-weight: bold;
-  background: url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/arrow_white.png')
-    no-repeat right 120px center;
+  background: url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/arrow_white.png') no-repeat right 120px center;
   margin-bottom: 8px;
 }
 
