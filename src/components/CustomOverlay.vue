@@ -1,19 +1,22 @@
 <script setup lang="ts">
-import { useMap } from '@/hooks/useMap';
-import type { CustomOverlayProps } from '@/types/CustomOverlayProps';
-import { toKakaoLatLng } from '@/utils/convert';
-import { onUnmounted, ref, shallowRef, watch } from 'vue';
+import { useMap } from '@/hooks/useMap'
+import { useMarkerClusterer } from '@/hooks/useMarkerClusterer'
+import type { CustomOverlayProps } from '@/types/CustomOverlayProps'
+import { toKakaoLatLng } from '@/utils/convert'
+import { onUnmounted, ref, shallowRef, watch } from 'vue'
 
 const props = withDefaults(defineProps<CustomOverlayProps>(), {
   clickable: false,
+  visible: true,
   xAnchor: 0.5,
   yAnchor: 0.5,
   zIndex: 0
 })
 
-const overlay = shallowRef<kakao.maps.CustomOverlay>(null);
-const map = useMap("CustomOverlay")
-const content = ref<HTMLDivElement>(null)
+const overlay = shallowRef<kakao.maps.CustomOverlay>(null)
+const map = useMap('CustomOverlay')
+const { clusterer, count } = useMarkerClusterer('CustomOverlay')
+const content = shallowRef<HTMLDivElement>(null)
 const hidden = ref(true)
 
 watch(map, (map) => {
@@ -21,13 +24,24 @@ watch(map, (map) => {
   if (overlay.value) return
 
   hidden.value = false
-  overlay.value = new kakao.maps.CustomOverlay(createOptions(props))
+  const options = createOptions(props)
+  overlay.value = new kakao.maps.CustomOverlay(options)
+  overlay.value.setContent(content.value)
 }, { immediate: true })
 
-watch([overlay, () => props.position], ([marker, position], [, _position]) => {
-  if (!marker) return
+watch([overlay, map], ([overlay, map], [_overlay, _map]) => {
+  if (!overlay) return
+  if (overlay === _overlay && map === _map) return
+  if (clusterer && clusterer) {
+    clusterer.value.addMarker(overlay, true)
+    count.value++
+  }
+}, { immediate: true })
+
+watch([overlay, () => props.position], ([overlay, position], [, _position]) => {
+  if (!overlay) return
   if (position === _position) return
-  marker.setPosition(toKakaoLatLng(position))
+  overlay.setPosition(toKakaoLatLng(position))
 }, { deep: true })
 
 // HTMLElement의 Attribute만 바뀌는 것으로는 업데이트가 안된다.
@@ -36,9 +50,10 @@ watch([overlay, content], ([overlay, content]) => {
   overlay.setContent(content)
 }, { deep: true })
 
-watch([overlay, () => props.visible], ([marker, visible]) => {
-  if (!marker) return
-  marker.setVisible(visible)
+watch([overlay, () => props.visible], ([overlay, visible], [, _visible]) => {
+  if (!overlay) return
+  if (visible === _visible) return
+  overlay.setVisible(visible)
 })
 
 watch([overlay, () => props.zIndex], ([overlay, zIndex], [, _zIndex]) => {
@@ -60,17 +75,21 @@ watch([overlay, () => props.range], ([overlay, range], [, _range]) => {
 })
 
 onUnmounted(() => {
-  if (!map.value) return
   if (!overlay.value) return
-
   hidden.value = true
-  overlay.value.setMap(null)
+  if (clusterer && clusterer.value) {
+    clusterer.value.removeMarker(overlay.value, true)
+    count.value++
+  } else {
+    overlay.value.setMap(null)
+  }
 })
 
 function createOptions(props: CustomOverlayProps): kakao.maps.CustomOverlayOptions {
+  const parent = clusterer && clusterer.value ? {} : { map: map.value }
   return {
     ...props,
-    map: map.value,
+    ...parent,
     position: toKakaoLatLng(props.position)
   }
 }
@@ -86,4 +105,4 @@ function createOptions(props: CustomOverlayProps): kakao.maps.CustomOverlayOptio
 .vue-kakao-maps--hidden {
   visibility: hidden;
 }
-</style>@/utils/convert
+</style>

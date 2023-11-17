@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { useMap } from '@/hooks/useMap';
-import { useMarkerClusterer } from '@/hooks/useMarkerClusterer';
-import type { MarkerProps } from '@/types/MarkerProps';
-import { toKakaoLatLng } from '@/utils/convert';
-import { onUnmounted, provide, ref, shallowRef, watch } from 'vue';
+import { useMap } from '@/hooks/useMap'
+import { useMarkerClusterer } from '@/hooks/useMarkerClusterer'
+import type { MarkerProps } from '@/types/MarkerProps'
+import { toKakaoLatLng } from '@/utils/convert'
+import { onUnmounted, provide, ref, shallowRef, watch } from 'vue'
 
 const props = withDefaults(defineProps<MarkerProps>(), {
   open: false,
@@ -28,12 +28,12 @@ const emit = defineEmits<{
   dragend: [event: {}]
 }>()
 
-const marker = shallowRef<kakao.maps.Marker>(null);
-const map = useMap("Marker")
-const { clusterer, count } = useMarkerClusterer("Marker")
+const marker = shallowRef<kakao.maps.Marker>(null)
+const map = useMap('Marker')
+const { clusterer, count } = useMarkerClusterer('Marker')
 // context 제공
 const pos = ref({ lat: 0, lng: 0 })
-provide("marker", { marker, position: pos })
+provide('marker', { marker, position: pos })
 
 watch(map, (map) => {
   if (!map) return
@@ -125,7 +125,7 @@ onUnmounted(() => {
 })
 
 // 지도 Event emit
-const listeners: Record<string, () => void> = {};
+const listeners: Record<string, () => void> = {}
 watch([marker, map], ([marker,]) => {
   if (!window.kakao || !window.kakao.maps) return
   if (!marker) return
@@ -147,9 +147,7 @@ function addListener(marker: kakao.maps.Marker, type: any, listeners: Record<str
 }
 
 function createOptions(props: MarkerProps): kakao.maps.MarkerOptions {
-  const parent = clusterer && clusterer.value
-    ? {}
-    : { map: map.value }
+  const parent = clusterer && clusterer.value ? {} : { map: map.value }
   return {
     ...props,
     ...parent,
@@ -160,4 +158,4 @@ function createOptions(props: MarkerProps): kakao.maps.MarkerOptions {
 
 <template>
   <slot></slot>
-</template>@/utils/convert
+</template>
