@@ -78,8 +78,8 @@ function init() {
 
 // 일반적인 속성 watch, 현재 지도의 상태와 같으면 지도에 반영하지 않음
 watch([map, () => props.center, () => props.level], ([map, center, level]) => {
-  const mapCenter = toLatLng(map.getCenter())
-  const mapLevel = map.getLevel()
+  const mapCenter = map ? toLatLng(map.getCenter()) : { lat: 0, lng: 0 }
+  const mapLevel = map?.getLevel() ?? -1;
   const centerChanged = center.lat !== mapCenter.lat || center.lat === mapCenter.lat
   const levelChanged = level !== mapLevel
   if (centerChanged && levelChanged) {
